@@ -29,7 +29,7 @@
         for(wint__Website_Account__c w : tempwebAcc){        
             if(w.wint__Contact__c != null || w.wint__Lead__c != null ){
                 System.debug('Testing if it is entering into tempwebAcc');
-                List <Contact> listofContacts = [SELECT id, AgriclimeProgramDetails__c, Account.Id, Account.BillingState, (SELECT id, Vibrance_Maxx_RFC_Committed__c FROM Programs__r) FROM Contact WHERE id =: w.wint__Contact__c ];
+                List <Contact> listofContacts = [SELECT id, AgriclimeProgramDetails__c,AgriclimeLentilsProgramDetails__c, Account.Id, Account.BillingState, (SELECT id, Vibrance_Maxx_RFC_Committed__c FROM Programs__r) FROM Contact WHERE id =: w.wint__Contact__c ];
                 
                 List<Lead> LeadId = [SELECT id, Name, Email FROM Lead WHERE id =: w.wint__Lead__c ];
                 List<Campaign> campaigns = new List<Campaign>();
@@ -45,7 +45,8 @@
                 //{
                     for(Contact e: listofContacts){
                         //system.debug('Testing if it is taking contact data' +e.Name);
-                    e.AgriclimeProgramDetails__c = ('');                        
+                    e.AgriclimeProgramDetails__c = (''); 
+                    e.AgriclimeLentilsProgramDetails__c = ('');                       
                     campaignMember cm = new CampaignMember(CampaignId  = '7013m000001dDv6', ContactId = e.Id, Status = 'Registered');
                     database.insert (cm,false);
                  }
@@ -113,10 +114,11 @@
                         Date EndDate = startDate.addDays(duration);                       
                         startPeriods = String.valueOf(startDate).removeEnd('00:00:00');                      
                     }                     
-                    for(Contact d : listofContacts){                         
-                        d.AgriclimeRefNumber__c = '<span style="font-size:18px;">Your Program Reference: <strong>' +w.wint__ReferenceNo__c+ '</strong>';
+                    for(Contact d : listofContacts){ 
+                        if(title == 'Agriclime Soybeans'){                        
+                        //d.AgriclimeRefNumber__c = '<span style="font-size:18px;">Your Program Reference: <strong>' +w.wint__ReferenceNo__c+ '</strong>';
                         d.AgriclimeName__c = '<span style="font-size:18px;">Name: <strong>' +w.wint__FirstName__c + ' ' +w.wint__LastName__c+ '</strong>';
-                        d.AgriclimeCompanyName__c = '<span style="font-size:18px;">Company Name: <strong>' +w.wint__Company__c+ '</strong>';
+                        //d.AgriclimeCompanyName__c = '<span style="font-size:18px;">Company Name: <strong>' +w.wint__Company__c+ '</strong>';
 						d.AgriclimeActualCashback__c = '<span style="font-size:18px;"><strong>Potential Cash Back Amount: ' +'$' +pc+' '+'CAD' +'</strong>';                        
                         d.AgriclimeCommittedSpend__c = '<span style="font-size:18px;"><strong>Total Committed Purchases: ' +'$' +compspend+'&nbsp;CAD</strong>';                           
                         d.AgriclimeProgramDetails__c += '<span style="font-size:20px;"><span style="color:#71840a;">Field: <strong>'+farmName+'</strong></span></span><br> <span style="font-size:18px;">Longitude: <strong>'+longitude+'</strong><br> Latitude: <strong>'+lattitude+'</strong><br> &nbsp;<br> <strong>Program&nbsp;Details</strong><br> Risk Period:</span></p> <ul> <li><span style="font-size:18px;">Start date: <strong>'+startPeriods+'</strong>, duration <strong>'+periodDuration+ '&nbsp;days</strong></span></li> </ul> <span style="font-size:18px;">Weather Guarantee:</span> <ul> <li><span style="font-size:18px;"><strong>Rainfall Threshold:'+' '+threshold+' &nbsp;mm</strong></span></li> <li><span style="font-size:18px;"><strong>Rainfall Threshold Exit (30% Cash-Back):'+' '+thresholdCashback+'</strong></span></li> </ul> <span style="font-size:18px;">Committed Area:</span><ul> <li><span style="font-size:18px;"><strong>'+String.valueOf(committedArea)+ '&nbsp;Acres</strong></span></ul></li><span style="font-size:18px;">Committed&nbsp;Product&nbsp;Details<span style="font-size:18px;"><ul> <strong>';                                                
@@ -128,7 +130,18 @@
                         }                         
                         d.AgriclimeProgramDetails__c +='</strong></span></li> </ul> <p><span style="font-size:18px;"><strong></strong><br></span>';                        
                         //System.debug(+d.Programs.Id);
-                        
+                    }
+                        else if(title == 'Canada Lentil'){
+                            d.AgriclimeName__c = '<span style="font-size:18px;">Name: <strong>' +w.wint__FirstName__c + ' ' +w.wint__LastName__c+ '</strong>';
+                            d.AgriclimeLentilsCommittedArea__c = '<span style="font-size:18px;"><strong>Total Committed Area: ' +Area+ '&nbsp;Acres</strong><br>';
+                            d.AgriclimeLentilsCommittedSpend__c = '<span style="font-size:18px;"><strong>Total Committed Purchases: ' +'$' +compspend+'&nbsp;CAD</strong>';
+                            d.AgriclimeLentilsPotentialCashback__c = '<span style="font-size:18px;"><strong>Potential Cash Back Amount: ' +'$' +pc+' '+'CAD' +'</strong>';
+                            d.AgriclimeLentilsProgramDetails__c += '<span style="font-size:20px;"><span style="color:#71840a;">Field: <strong>'+farmName+'</strong></span></span><br> <span style="font-size:18px;">Longitude: <strong>'+longitude+'</strong><br> Latitude: <strong>'+lattitude+'</strong><br> &nbsp;<br> <strong>Program&nbsp;Details</strong><br> Risk Period:</span></p> <ul> <li><span style="font-size:18px;">Start date: <strong>'+startPeriods+'</strong>, duration <strong>'+periodDuration+ '&nbsp;days</strong></span></li> </ul> <span style="font-size:18px;">Weather Guarantee:</span> <ul> <li><span style="font-size:18px;"><strong>Rainfall Threshold:'+' '+threshold+' &nbsp;mm</strong></span></li> <li><span style="font-size:18px;"><strong>Rainfall Threshold Exit (30% Cash-Back):'+' '+thresholdCashback+'</strong></span></li> </ul> <span style="font-size:18px;">Committed Area:</span><ul> <li><span style="font-size:18px;"><strong>'+String.valueOf(committedArea)+ '&nbsp;Acres</strong></span></ul></li><span style="font-size:18px;">Committed&nbsp;Product&nbsp;Details<span style="font-size:18px;"><ul> <strong>';                                                                                               
+                            for(String p: productDetails){
+                                d.AgriclimeLentilsProgramDetails__c +='<li>'+p+'<span style="font-size:18px;">';
+                                d.AgriclimeLentilsProgramDetails__c +='<br>';
+                            }
+                        }
                         conList.put(d.Id,d);
                         setOfContactIds.add(d.Id);                          
                     } 
