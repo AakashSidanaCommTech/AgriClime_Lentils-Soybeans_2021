@@ -34,7 +34,9 @@
                 List<Lead> LeadId = [SELECT id, Name, Email FROM Lead WHERE id =: w.wint__Lead__c ];
                 List<Campaign> campaigns = new List<Campaign>();
                 List<CampaignMember> members = new List<CampaignMember>(); 
-                List<Programs__c> listofPrograms = new List<Programs__c>();               
+                List<Programs__c> listofPrograms = new List<Programs__c>();
+                Id agriClimeRecordTypeId = Schema.SObjectType.Programs__c.getRecordTypeInfosByName().get('AgriClime Soybeans').getRecordTypeId();
+                Id agriClimeLentilsRecordTypeId = Schema.SObjectType.Programs__c.getRecordTypeInfosByName().get('AgriClime Lentils').getRecordTypeId();                
                 farmtest = (FarmWrapper)JSON.deserialize(w.wint__Any__c, FarmWrapper.class); 
                 //Map<Id,Contact> conList = new Map<Id,Contact>();
                 Map<Id,Lead> leadList = new Map<Id, Lead>();
@@ -145,11 +147,10 @@
                         conList.put(d.Id,d);
                         setOfContactIds.add(d.Id);                          
                     } 
-                    
-                    if(conList.size()>0){
-                        List<Programs__c> listofUpdatePrograms = [SELECT id, Contact__r.Id, Vibrance_Maxx_RFC_Committed__c,Soybean_Variety_1_Committed__c, Soybean_Variety_2_Committed__c, Soybean_Variety_3_Committed__c, Soybean_Variety_4_Committed__c, Soybean_Variety_5_Committed__c,Soybean_Variety_6_Committed__c, Soybean_Variety_7_Committed__c, Soybean_Variety_8_Committed__c,Cruiser_Maxx_Vibrance_Beans_Committed__c FROM Programs__c WHERE Contact__r.Id IN : conList.keySet()];
+                       if(conList.size()>0 && title == 'Agriclime Soybeans'){ 
+                        List<Programs__c> listofUpdatePrograms = [SELECT id, Contact__r.Id, Vibrance_Maxx_RFC_Committed__c,Soybean_Variety_1_Committed__c, Soybean_Variety_2_Committed__c, Soybean_Variety_3_Committed__c, Soybean_Variety_4_Committed__c, Soybean_Variety_5_Committed__c,Soybean_Variety_6_Committed__c, Soybean_Variety_7_Committed__c, Soybean_Variety_8_Committed__c,Cruiser_Maxx_Vibrance_Beans_Committed__c,VibranceMaxx_RFC_AgriClime_Lentils__c, VibranceMaxx_RTA_Agriclime_Lentils__c, VibranceMaxx_Intego_Agriclime_Lentils__c, Elatus_AgriClime_Lentils__c FROM Programs__c WHERE Contact__r.Id IN : conList.keySet() AND RecordTypeId = :agriClimeRecordTypeId];
                        
-                        if(listofUpdatePrograms.Size() > 0 & title == 'Agriclime Soybeans' ){
+                        if(listofUpdatePrograms.Size() > 0 ){
                      
                         for(Programs__c updatedprogramRecord : listofUpdatePrograms){
                         updatedprogramRecord.Soybean_Variety_1_Committed__c = null;
@@ -222,18 +223,55 @@
                  
                     
                          } ProgramMap.put(updatedprogramRecord.Id, updatedprogramRecord);
-                     } 
+                        } 
                             update listofUpdatePrograms;
-                         }
-
+                     }
                     }
+                    if(conList.size()>0 && title == 'Canada Lentil'){ 
+                        List<Programs__c> listofUpdatePrograms = [SELECT id, Contact__r.Id, Vibrance_Maxx_RFC_Committed__c,Soybean_Variety_1_Committed__c, Soybean_Variety_2_Committed__c, Soybean_Variety_3_Committed__c, Soybean_Variety_4_Committed__c, Soybean_Variety_5_Committed__c,Soybean_Variety_6_Committed__c, Soybean_Variety_7_Committed__c, Soybean_Variety_8_Committed__c,Cruiser_Maxx_Vibrance_Beans_Committed__c,VibranceMaxx_RFC_AgriClime_Lentils__c, VibranceMaxx_RTA_Agriclime_Lentils__c, VibranceMaxx_Intego_Agriclime_Lentils__c, Elatus_AgriClime_Lentils__c ,AgriClime_Lentils_Total_Committed_Acres__c FROM Programs__c WHERE Contact__r.Id IN : conList.keySet() AND RecordTypeId = :agriClimeLentilsRecordTypeId];
+                       
+                        if(listofUpdatePrograms.Size() > 0 ){
+                             for(Programs__c updatedprogramRecord : listofUpdatePrograms){
+                                 updatedprogramRecord.VibranceMaxx_RFC_AgriClime_Lentils__c = null;
+                                 updatedprogramRecord.VibranceMaxx_RTA_Agriclime_Lentils__c = null;
+                                 updatedprogramRecord.VibranceMaxx_Intego_Agriclime_Lentils__c = null;
+                                 updatedprogramRecord.Elatus_AgriClime_Lentils__c = null;
+                                 updatedprogramRecord.AgriClime_Lentils_Total_Committed_Acres__c = Area;
+                             
+                             for(FarmWrapper.cls_purchaseSummaryList purchaseSummary : farmtest.purchaseSummaryList){
+                                String summaryProduct = purchaseSummary.productLabel;
+                                Double quantity = purchaseSummary.quantity;
+                                if (summaryProduct == 'VibranceMaxx RFC') {
+                                    //programRecord.Soybean_Variety_1__c = 'S001-D8X ';
+                                    updatedprogramRecord.VibranceMaxx_RFC_AgriClime_Lentils__c = quantity;
+            
+                                } 
+                                
+                                if(summaryProduct == 'VibranceMaxx RTA'){
+                                    
+                                    updatedprogramRecord.VibranceMaxx_RTA_Agriclime_Lentils__c = quantity;
+                                }
+                                
+                                if(summaryProduct == 'VibranceMaxx Intego'){
+                                    
+                                    updatedprogramRecord.VibranceMaxx_Intego_Agriclime_Lentils__c = quantity;
+                                }
+                                
+                                if(summaryProduct == 'Elatus'){
+                                    
+                                    updatedprogramRecord.Elatus_AgriClime_Lentils__c = quantity;
+                                }                           
+                            } ProgramMap.put(updatedprogramRecord.Id, updatedprogramRecord);
+                         }
+                         update listofUpdatePrograms;
+                        }
+                     }
                     if(Area != null){
                         totalCommittedArea = Area;
                     }
                 } 
                 
-                Id agriClimeRecordTypeId = Schema.SObjectType.Programs__c.getRecordTypeInfosByName().get('AgriClime Soybeans').getRecordTypeId();
-                Id agriClimeLentilsRecordTypeId = Schema.SObjectType.Programs__c.getRecordTypeInfosByName().get('AgriClime Lentils').getRecordTypeId();
+                
                 for(Contact programContact : listofContacts){                   
                    if(Trigger.isInsert){
                     Programs__c programRecord = new Programs__c();
@@ -340,10 +378,7 @@
                         }                           
                     } 
 
-                    }
-                    
-                 
-                            
+                    }                            
                 }
             }
                 Insert ListofPrograms;
