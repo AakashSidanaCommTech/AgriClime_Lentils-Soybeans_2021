@@ -4,14 +4,14 @@ trigger WebsiteAccount on wint__Website_Account__c (after update, after insert, 
         
     Set<id>websiteIdinTrigger = new Set<id>();
     for(wint__Website_Account__c webAcc : Trigger.New){
-       if(webAcc.wint__Contact__c <> Trigger.oldMap.get(webAcc.id).wint__Contact__c){
+       //if(webAcc.wint__Contact__c <> Trigger.oldMap.get(webAcc.id).wint__Contact__c){
             websiteIdinTrigger.add(webAcc.id);
             //System.debug('Testing if it is entering into trigger atleast');
-        }
+        //}
        
     }
     
-    WebsiteAccountHandler.farmWrapperCalling(websiteIdinTrigger);
+    WebsiteAccountHandler.farmWrapperCalling(websiteIdinTrigger, Trigger.oldMap);
     
 }
 else if(Trigger.isAfter && Trigger.isUpdate){
@@ -25,7 +25,7 @@ else if(Trigger.isAfter && Trigger.isUpdate){
        
     }
     
-    WebsiteAccountHandler.farmWrapperCalling(websiteIdinTrigger);
+    WebsiteAccountHandler.farmWrapperCalling(websiteIdinTrigger, Trigger.oldMap);
     
 }
 

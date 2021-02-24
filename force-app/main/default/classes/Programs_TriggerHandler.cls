@@ -4,9 +4,9 @@ public class Programs_TriggerHandler {
         List<Id> AccountIDs = new List<Id>();
         if (newRows <> null){
             for (Programs__c p : newRows){
-                if(p.Account__c <> null && CLS_StaticUtils.RecordTypeMap.get(p.RecordTypeID).DeveloperName <> 'AgriClime_Soybeans'){
+                if(p.Account__c <> null && CLS_StaticUtils.RecordTypeMap.get(p.RecordTypeID).DeveloperName <> 'AgriClime_Soybeans' && CLS_StaticUtils.RecordTypeMap.get(p.RecordTypeID).DeveloperName <> 'AgriClime_Lentils'){
                     AccountIDs.add(p.Account__c);
-                }    
+                }  
             }
         }
         

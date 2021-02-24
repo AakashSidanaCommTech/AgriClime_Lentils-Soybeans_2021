@@ -18,11 +18,11 @@
 * 06-Jan-2020 Aakash                          Created  
 ********************************************************************************************/
     
-    public static void farmWrapperCalling(Set<id> triggernew){
+    public static void farmWrapperCalling(Set<id> triggernew, Map<Id, wint__Website_Account__c> weboldMap){
         FarmWrapper farmtest;
         Map<Id,Contact> conList = new Map<Id,Contact>();
         Map<Id, Programs__c> ProgramMap = new Map<Id, Programs__c>();
-        List<wint__Website_Account__c> tempwebAcc = [SELECT id,wint__Contact__c, wint__Contact2__c, wint__Email__c, wint__Lead__c,wint__Any__c,wint__ReferenceNo__c,wint__FirstName__c,wint__LastName__c,wint__Company__c, wint__Street__c,wint__City__c, wint__Street2__c,wint__PostalCode__c, wint__State__c, wint__FarmName__c  FROM wint__Website_Account__c WHERE id IN :triggernew];      
+        List<wint__Website_Account__c> tempwebAcc = [SELECT id,wint__Contact__c,wint__Campaign__c, wint__Contact2__c, wint__Email__c, wint__Lead__c,wint__Any__c,wint__ReferenceNo__c,wint__FirstName__c,wint__LastName__c,wint__Company__c, wint__Street__c,wint__City__c, wint__Street2__c,wint__PostalCode__c, wint__State__c, wint__FarmName__c  FROM wint__Website_Account__c WHERE id IN :triggernew];      
         system.debug('Testing if it is taking contact data');
         Set<Id> setOfContactIds = new Set<Id>();
         Double totalCommittedArea;
@@ -47,10 +47,17 @@
                 //{
                     for(Contact e: listofContacts){
                         //system.debug('Testing if it is taking contact data' +e.Name);
-                    e.AgriclimeProgramDetails__c = (''); 
-                    e.AgriclimeLentilsProgramDetails__c = ('');                       
-                    campaignMember cm = new CampaignMember(CampaignId  = '7013m000001dDv6', ContactId = e.Id, Status = 'Registered');
-                    database.insert (cm,false);
+                        if(w.wint__Campaign__c == 'Canada_Soy_Manitoba_2021' || w.wint__Campaign__c == 'Canada_Soy_Saskatchewan_2021'){ 
+                         e.AgriclimeProgramDetails__c = ('');
+                        campaignMember soybeansMember = new CampaignMember(CampaignId  = '7013m000001dDv6', ContactId = e.Id, Status = 'Registered');
+                        database.insert (soybeansMember,false); 
+                        }
+                        if(w.wint__Campaign__c == 'Canada Lentil'){
+                        e.AgriclimeLentilsProgramDetails__c = ('');
+                        campaignMember lentilsMember = new CampaignMember(CampaignId  = '7013m000001dDvB', ContactId = e.Id, Status = 'Registered');
+                        database.insert (lentilsMember,false);
+                        }                       
+                        
                  }
                  
                     String title = farmtest.campaign.title;
@@ -117,7 +124,7 @@
                         startPeriods = String.valueOf(startDate).removeEnd('00:00:00');                      
                     }                     
                     for(Contact d : listofContacts){ 
-                        if(title == 'Agriclime Soybeans'){                        
+                        if(title == 'Canada_Soy_Manitoba_2021' || title == 'Canada_Soy_Saskatchewan_2021'){                        
                         //d.AgriclimeRefNumber__c = '<span style="font-size:18px;">Your Program Reference: <strong>' +w.wint__ReferenceNo__c+ '</strong>';
                         d.AgriclimeName__c = '<span style="font-size:18px;">Name: <strong>' +w.wint__FirstName__c + ' ' +w.wint__LastName__c+ '</strong>';
                         //d.AgriclimeCompanyName__c = '<span style="font-size:18px;">Company Name: <strong>' +w.wint__Company__c+ '</strong>';
@@ -147,7 +154,7 @@
                         conList.put(d.Id,d);
                         setOfContactIds.add(d.Id);                          
                     } 
-                       if(conList.size()>0 && title == 'Agriclime Soybeans'){ 
+                       if(conList.size()>0 && (title == 'Canada_Soy_Manitoba_2021' || title == 'Canada_Soy_Saskatchewan_2021')){ 
                         List<Programs__c> listofUpdatePrograms = [SELECT id, Contact__r.Id, Vibrance_Maxx_RFC_Committed__c,Soybean_Variety_1_Committed__c, Soybean_Variety_2_Committed__c, Soybean_Variety_3_Committed__c, Soybean_Variety_4_Committed__c, Soybean_Variety_5_Committed__c,Soybean_Variety_6_Committed__c, Soybean_Variety_7_Committed__c, Soybean_Variety_8_Committed__c,Cruiser_Maxx_Vibrance_Beans_Committed__c,VibranceMaxx_RFC_AgriClime_Lentils__c, VibranceMaxx_RTA_Agriclime_Lentils__c, VibranceMaxx_Intego_Agriclime_Lentils__c, Elatus_AgriClime_Lentils__c FROM Programs__c WHERE Contact__r.Id IN : conList.keySet() AND RecordTypeId = :agriClimeRecordTypeId];
                        
                         if(listofUpdatePrograms.Size() > 0 ){
@@ -273,10 +280,11 @@
                 
                 
                 for(Contact programContact : listofContacts){                   
-                   if(Trigger.isInsert){
+                    if(Trigger.isInsert || (weboldMap.get(w.id).wint__Contact__c == null && w.wint__Contact__c <> null) ){ 
+                      //if(Trigger.isInsert){ 
                     Programs__c programRecord = new Programs__c();
                    
-                    if(title == 'Agriclime Soybeans'){
+                    if(title == 'Canada_Soy_Manitoba_2021' || title == 'Canada_Soy_Saskatchewan_2021'){
                     programRecord.Program_Reference__c = +w.wint__ReferenceNo__c;
                     programRecord.Account__c = programContact.Account.Id;
                     programRecord.Contact__c = programContact.Id;
@@ -344,7 +352,7 @@
                     //programRecord.Total_Committed_Acres__c = programRecord.Area;
                     }
                     
-                    if( title == 'Canada Lentil'){
+                    if(title == 'Canada Lentil'){
                     programRecord.AgriClime_Lentils_Program_Reference__c = +w.wint__ReferenceNo__c;
                     programRecord.Account__c = programContact.Account.Id;
                     programRecord.Contact__c = programContact.Id;
@@ -385,7 +393,7 @@
                 for(Lead ld : LeadId){
                     if(w.wint__Email__c != null){
                         Messaging.SingleEmailMessage singleMail = new Messaging.SingleEmailMessage();
-                        list<String> toAddresses = new List<String>{'cic.canada@syngenta.com'};
+                        list<String> toAddresses = new List<String>{'aakash.sidana@syngenta.com'};
                         singleMail.setToAddresses(toAddresses);
                         singleMail.setSubject('Lead needs to be converted for :'+' ' +ld.Name);
                         singleMail.setPlainTextBody('Please convert this lead to send out registration email to: ' +'<a href=' +System.URL.getSalesforceBaseUrl().toExternalForm()+'/'+ld.Id+' >'+ ld.Name+'</a> <br/>' + '<br>' + 'Email  address:</b>' +' '+ ld.Email);
