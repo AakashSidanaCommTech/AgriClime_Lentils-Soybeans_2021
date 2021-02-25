@@ -29,12 +29,14 @@
         for(wint__Website_Account__c w : tempwebAcc){        
             if(w.wint__Contact__c != null || w.wint__Lead__c != null ){
                 System.debug('Testing if it is entering into tempwebAcc');
-                List <Contact> listofContacts = [SELECT id, AgriclimeProgramDetails__c,AgriclimeLentilsProgramDetails__c, Account.Id, Account.BillingState, (SELECT id, Vibrance_Maxx_RFC_Committed__c,Soybean_Variety_1_Committed__c, Soybean_Variety_2_Committed__c, Soybean_Variety_3_Committed__c, Soybean_Variety_4_Committed__c, Soybean_Variety_5_Committed__c,Soybean_Variety_6_Committed__c, Soybean_Variety_7_Committed__c, Soybean_Variety_8_Committed__c,Cruiser_Maxx_Vibrance_Beans_Committed__c, VibranceMaxx_RFC_AgriClime_Lentils__c, VibranceMaxx_RTA_Agriclime_Lentils__c,VibranceMaxx_Intego_Agriclime_Lentils__c,Elatus_AgriClime_Lentils__c FROM Programs__r) FROM Contact WHERE id =: w.wint__Contact__c ];
+                List <Contact> listofContacts = [SELECT id, AgriclimeProgramDetails__c,AgriclimeLentilsProgramDetails__c,AgriclimeLentilsCommittedProductDetails__c,AgriclimeSoyCommittedProductDetails__c, Account.Id, Account.BillingState, (SELECT id, Vibrance_Maxx_RFC_Committed__c,Soybean_Variety_1_Committed__c, Soybean_Variety_2_Committed__c, Soybean_Variety_3_Committed__c, Soybean_Variety_4_Committed__c, Soybean_Variety_5_Committed__c,Soybean_Variety_6_Committed__c, Soybean_Variety_7_Committed__c, Soybean_Variety_8_Committed__c,Cruiser_Maxx_Vibrance_Beans_Committed__c, VibranceMaxx_RFC_AgriClime_Lentils__c, VibranceMaxx_RTA_Agriclime_Lentils__c,VibranceMaxx_Intego_Agriclime_Lentils__c,Elatus_AgriClime_Lentils__c FROM Programs__r) FROM Contact WHERE id =: w.wint__Contact__c ];
                 
                 List<Lead> LeadId = [SELECT id, Name, Email FROM Lead WHERE id =: w.wint__Lead__c ];
                 List<Campaign> campaigns = new List<Campaign>();
                 List<CampaignMember> members = new List<CampaignMember>(); 
                 List<Programs__c> listofPrograms = new List<Programs__c>();
+                List<String> summaryofproductDetailsList = new List<String>();
+                //List<String> varietyDetails = new List<String>();
                 Id agriClimeRecordTypeId = Schema.SObjectType.Programs__c.getRecordTypeInfosByName().get('AgriClime Soybeans').getRecordTypeId();
                 Id agriClimeLentilsRecordTypeId = Schema.SObjectType.Programs__c.getRecordTypeInfosByName().get('AgriClime Lentils').getRecordTypeId();                
                 farmtest = (FarmWrapper)JSON.deserialize(w.wint__Any__c, FarmWrapper.class); 
@@ -42,20 +44,43 @@
                 Map<Id,Lead> leadList = new Map<Id, Lead>();
                 Double Area = 0;
                 Double potentialCashback = 0;
-                Double committedPurchase = 0;                
+                Double committedPurchase = 0;
+                                
                 //if(Trigger.isInsert)
                 //{
                     for(Contact e: listofContacts){
                         //system.debug('Testing if it is taking contact data' +e.Name);
                         if(w.wint__Campaign__c == 'Canada_Soy_Manitoba_2021' || w.wint__Campaign__c == 'Canada_Soy_Saskatchewan_2021'){ 
                          e.AgriclimeProgramDetails__c = ('');
-                        campaignMember soybeansMember = new CampaignMember(CampaignId  = '7013m000001dDv6', ContactId = e.Id, Status = 'Registered');
-                        database.insert (soybeansMember,false); 
+                         e.AgriclimeSoyCommittedProductDetails__c = ('');
+                         e.AgriclimeSoyCommittedProductDetails__c = '<strong>Total Committed&nbsp;Product&nbsp;Details<span style="font-size:18px;"></strong>';
+                        //campaignMember soybeansMember = new CampaignMember(CampaignId  = '7013m000001dDv6', ContactId = e.Id, Status = 'Registered');
+                        //database.insert (soybeansMember,false); 
+                        for(FarmWrapper.cls_purchaseSummaryList purchaseSummary : farmtest.purchaseSummaryList){
+                            String summaryofProduct = purchaseSummary.productLabel;
+                            String summaryofAllProductAmount = String.valueOf(purchaseSummary.totalAmount);
+                            String summaryofallProduct = summaryofProduct + ','+ (' ')+'$'+ summaryofAllProductAmount + ' '+ 'CAD'; 
+                            
+                            e.AgriclimeSoyCommittedProductDetails__c +='<br><li>'+summaryofAllProduct+'<span style="font-size:16px;">';
+                            //e.AgriclimeSoyCommittedProductDetails__c +='<br>';
+                            
+                    } 
                         }
-                        if(w.wint__Campaign__c == 'Canada Lentil'){
+                        else if(w.wint__Campaign__c == 'Canada Lentil'){
                         e.AgriclimeLentilsProgramDetails__c = ('');
-                        campaignMember lentilsMember = new CampaignMember(CampaignId  = '7013m000001dDvB', ContactId = e.Id, Status = 'Registered');
-                        database.insert (lentilsMember,false);
+                        e.AgriclimeLentilsCommittedProductDetails__c = ('');
+                        e.AgriclimeLentilsCommittedProductDetails__c = '<strong>Total Committed&nbsp;Product&nbsp;Details<span style="font-size:18px;"></strong>';
+                        //campaignMember lentilsMember = new CampaignMember(CampaignId  = '7013m000001dDvB', ContactId = e.Id, Status = 'Registered');
+                        //database.insert (lentilsMember,false);
+                        for(FarmWrapper.cls_purchaseSummaryList purchaseSummary : farmtest.purchaseSummaryList){
+                            String summaryofProduct = purchaseSummary.productLabel;
+                            String summaryofAllProductAmount = String.valueOf(purchaseSummary.totalAmount);
+                            String summaryofallProduct = summaryofProduct + ','+ (' ')+'$'+ summaryofAllProductAmount + ' '+ 'CAD'; 
+                            
+                            e.AgriclimeLentilsCommittedProductDetails__c +='<br><li>'+summaryofAllProduct+'<span style="font-size:16px;">';
+                            //e.AgriclimeLentilsCommittedProductDetails__c +='<br>';
+                            
+                    }
                         }                       
                         
                  }
@@ -65,7 +90,7 @@
                     
                     String season = farmtest.campaign.season;
                     system.debug('Season is' +season);
-                 
+                
                 for(FarmWrapper.cls_farms fm : farmtest.farms){
                     String farmName = (fm.name !=null ? fm.name : '*No Field Name Specified*'); //fm.name;
                     Integer committedArea = fm.committedArea.intValue();
@@ -84,8 +109,8 @@
                     //String committedSpendCurrency = fm.currency;
                     List<String> productLabel = new List<String>();
                     List<String> productDetails = new List<String>();
-                    List<String> seedcareDetails = new List<String>();
-                    List<String> varietyDetails = new List<String>();
+                    //List<String> seedcareDetails = new List<String>();
+                    //List<String> varietyDetails = new List<String>();
                     String weGuarantee = fm.weatherGuarantee;
                     String threshold = weGuarantee.substringBetween('if the rainfall during the selected guarantee period is below ', 'mm, up to a maximum payout of 30 % of the qualifying AgriClime purchases, if the rainfall is at or below');                   
                     String thresholdCashback = weGuarantee.substringAfter(' up to a maximum payout of 30 % of the qualifying AgriClime purchases, if the rainfall is at or below ');
@@ -105,14 +130,14 @@
                         //String prdDetails = prdLabel +','+' '+ '$'+ amounts +' '+amountCurrency;
                         String prdDetails = prdLabel +','+' '+ '$'+ prices +' '+'CAD'; 
                         productDetails.add(prdDetails);
-                        if(prdLabel == 'CruiserMaxx Vibrance beans' || prdLabel == 'VibranceMaxx RFC'){
+                        /**if(prdLabel == 'CruiserMaxx Vibrance beans' || prdLabel == 'VibranceMaxx RFC'){
                             String purchaseSeedCareSummary = prdLabel + ','+quantity;
                             seedcareDetails.add(purchaseSeedCareSummary);
                         }
                         else{
                             String purchaseVarietySummary = prdLabel + ',' +quantity;
                             varietyDetails.add(purchaseVarietySummary);
-                        }
+                        }**/
 
                     }
                     
@@ -126,30 +151,36 @@
                     for(Contact d : listofContacts){ 
                         if(title == 'Canada_Soy_Manitoba_2021' || title == 'Canada_Soy_Saskatchewan_2021'){                        
                         //d.AgriclimeRefNumber__c = '<span style="font-size:18px;">Your Program Reference: <strong>' +w.wint__ReferenceNo__c+ '</strong>';
-                        d.AgriclimeName__c = '<span style="font-size:18px;">Name: <strong>' +w.wint__FirstName__c + ' ' +w.wint__LastName__c+ '</strong>';
+                        d.AgriclimeName__c = '<span style="font-size:16px;">Name: <strong>' +w.wint__FirstName__c + ' ' +w.wint__LastName__c+ '</strong>';
                         //d.AgriclimeCompanyName__c = '<span style="font-size:18px;">Company Name: <strong>' +w.wint__Company__c+ '</strong>';
-						d.AgriclimeActualCashback__c = '<span style="font-size:18px;"><strong>Potential Cash Back Amount: ' +'$' +pc+' '+'CAD' +'</strong>';                        
-                        d.AgriclimeCommittedSpend__c = '<span style="font-size:18px;"><strong>Total Committed Purchases: ' +'$' +compspend+'&nbsp;CAD</strong>';                           
-                        d.AgriclimeProgramDetails__c += '<span style="font-size:20px;"><span style="color:#71840a;">Field: <strong>'+farmName+'</strong></span></span><br> <span style="font-size:18px;">Longitude: <strong>'+longitude+'</strong><br> Latitude: <strong>'+lattitude+'</strong><br> &nbsp;<br> <strong>Program&nbsp;Details</strong><br> Risk Period:</span></p> <ul> <li><span style="font-size:18px;">Start date: <strong>'+startPeriods+'</strong>, duration <strong>'+periodDuration+ '&nbsp;days</strong></span></li> </ul> <span style="font-size:18px;">Weather Guarantee:</span> <ul> <li><span style="font-size:18px;"><strong>Rainfall Threshold:'+' '+threshold+' &nbsp;mm</strong></span></li> <li><span style="font-size:18px;"><strong>Rainfall Threshold Exit (30% Cash-Back):'+' '+thresholdCashback+'</strong></span></li> </ul> <span style="font-size:18px;">Committed Area:</span><ul> <li><span style="font-size:18px;"><strong>'+String.valueOf(committedArea)+ '&nbsp;Acres</strong></span></ul></li><span style="font-size:18px;">Committed&nbsp;Product&nbsp;Details<span style="font-size:18px;"><ul> <strong>';                                                
-                        d.AgriclimeStatus__c = 'Unsend';
-                        d.AgriclimeCommittedArea__c = '<span style="font-size:18px;"><strong>Total Committed Area: ' +Area+ '&nbsp;Acres</strong><br>';                        
+						d.AgriclimeActualCashback__c = '<span style="font-size:16px;"><strong>Potential Cash Back Amount: ' +'$' +pc+' '+'CAD' +'</strong>';                        
+                        d.AgriclimeCommittedSpend__c = '<span style="font-size:16px;"><strong>Total Committed Purchases: ' +'$' +compspend+'&nbsp;CAD</strong>';                           
+                        //d.AgriclimeProgramDetails__c += '<span style="font-size:20px;"><span style="color:#71840a;">Field: <strong>'+farmName+'</strong></span></span><br> <span style="font-size:18px;">Longitude: <strong>'+longitude+'</strong><br> Latitude: <strong>'+lattitude+'</strong><br> &nbsp;<br> <strong>Program&nbsp;Details</strong><br> Risk Period:</span></p> <ul> <li><span style="font-size:18px;">Start date: <strong>'+startPeriods+'</strong>, duration <strong>'+periodDuration+ '&nbsp;days</strong></span></li> </ul> <span style="font-size:18px;">Weather Guarantee:</span> <ul> <li><span style="font-size:18px;"><strong>Rainfall Threshold:'+' '+threshold+' &nbsp;mm</strong></span></li> <li><span style="font-size:18px;"><strong>Rainfall Threshold Exit (30% Cash-Back):'+' '+thresholdCashback+'</strong></span></li> </ul> <span style="font-size:18px;">Committed Area:</span><ul> <li><span style="font-size:18px;"><strong>'+String.valueOf(committedArea)+ '&nbsp;Acres</strong></span></ul></li><span style="font-size:18px;">Committed&nbsp;Product&nbsp;Details<span style="font-size:18px;"><ul> <strong>';                                                
+                        d.AgriclimeProgramDetails__c += '<br><span style="font-size:18px;"><span style="color:#009dba;"><strong>Field:</strong> '+farmName+'</span></span><br> <span style="font-size:16px;"><strong>Longitude:</strong> '+longitude+'<br><strong> Latitude:</strong> '+lattitude+'<br> &nbsp;<br> <strong>Program&nbsp;Details</strong><br><br><strong>Risk Period:</strong></span><br> <span style="font-size:16px;">Start date: '+startPeriods+ ', duration '+periodDuration+ '&nbsp;days</span><br><br><span style="font-size:16px;"><strong>Weather Guarantee:</span></strong><br><span style="font-size:16px;">Rainfall Threshold:'+' '+threshold+' &nbsp;mm<br></span><span style="font-size:16px;">Rainfall Threshold Exit (30% Cash-Back):'+' '+thresholdCashback+'</span><br><br>  <span style="font-size:16px;"><strong>Committed Area:</strong></span><span style="font-size:16px;">'+String.valueOf(committedArea)+ '&nbsp;Acres</span><br><br><span style="font-size:16px;"><strong>Committed&nbsp;Product&nbsp;Details<span style="font-size:18px;"></strong><br>';
+                        //d.AgriclimeStatus__c = 'Unsend';
+                        d.AgriclimeCommittedArea__c = '<span style="font-size:16px;"><strong>Total Committed Area: ' +Area+ '&nbsp;Acres</strong><br>';                        
                         for(String p: productDetails){
-                            d.AgriclimeProgramDetails__c +='<li>'+p+'<span style="font-size:18px;">';
+                            d.AgriclimeProgramDetails__c +='<li>'+p+'<span style="font-size:16px;">';
                             d.AgriclimeProgramDetails__c +='<br>';
-                        }                         
-                        d.AgriclimeProgramDetails__c +='</strong></span></li> </ul> <p><span style="font-size:18px;"><strong></strong><br></span>';                        
+                        }  
+                        campaignMember soybeansMember = new CampaignMember(CampaignId  = '7013m000001dDv6', ContactId = d.Id, Status = 'Registered');
+                        database.insert (soybeansMember,false);                       
+                        //d.AgriclimeProgramDetails__c +='</strong></span></li> </ul> <p><span style="font-size:18px;"><strong></strong><br></span>';                        
                         //System.debug(+d.Programs.Id);
                      }
                         else if(title == 'Canada Lentil'){
-                            d.AgriclimeName__c = '<span style="font-size:18px;">Name: <strong>' +w.wint__FirstName__c + ' ' +w.wint__LastName__c+ '</strong>';
-                            d.AgriclimeLentilsCommittedArea__c = '<span style="font-size:18px;"><strong>Total Committed Area: ' +Area+ '&nbsp;Acres</strong><br>';
-                            d.AgriclimeLentilsCommittedSpend__c = '<span style="font-size:18px;"><strong>Total Committed Purchases: ' +'$' +compspend+'&nbsp;CAD</strong>';
-                            d.AgriclimeLentilsPotentialCashback__c = '<span style="font-size:18px;"><strong>Potential Cash Back Amount: ' +'$' +pc+' '+'CAD' +'</strong>';
-                            d.AgriclimeLentilsProgramDetails__c += '<span style="font-size:20px;"><span style="color:#71840a;">Field: <strong>'+farmName+'</strong></span></span><br> <span style="font-size:18px;">Longitude: <strong>'+longitude+'</strong><br> Latitude: <strong>'+lattitude+'</strong><br> &nbsp;<br> <strong>Program&nbsp;Details</strong><br> Risk Period:</span></p> <ul> <li><span style="font-size:18px;">Start date: <strong>'+startPeriods+'</strong>, duration <strong>'+periodDuration+ '&nbsp;days</strong></span></li> </ul> <span style="font-size:18px;">Weather Guarantee:</span> <ul> <li><span style="font-size:18px;"><strong>Rainfall Threshold:'+' '+threshold+' &nbsp;mm</strong></span></li> <li><span style="font-size:18px;"><strong>Rainfall Threshold Exit (30% Cash-Back):'+' '+thresholdCashback+'</strong></span></li> </ul> <span style="font-size:18px;">Committed Area:</span><ul> <li><span style="font-size:18px;"><strong>'+String.valueOf(committedArea)+ '&nbsp;Acres</strong></span></ul></li><span style="font-size:18px;">Committed&nbsp;Product&nbsp;Details<span style="font-size:18px;"><ul> <strong>';                                                                                               
+                            d.AgriclimeName__c = '<span style="font-size:16px;">Name: <strong>' +w.wint__FirstName__c + ' ' +w.wint__LastName__c+ '</strong>';
+                            d.AgriclimeLentilsCommittedArea__c = '<span style="font-size:16px;"><strong>Total Committed Area: ' +Area+ '&nbsp;Acres</strong><br>';
+                            d.AgriclimeLentilsCommittedSpend__c = '<span style="font-size:16px;"><strong>Total Committed Purchases: ' +'$' +compspend+'&nbsp;CAD</strong>';
+                            d.AgriclimeLentilsPotentialCashback__c = '<span style="font-size:16px;"><strong>Potential Cash Back Amount: ' +'$' +pc+' '+'CAD' +'</strong>';
+                            //d.AgriclimeLentilsCommittedProductDetails__c = 
+                            d.AgriclimeLentilsProgramDetails__c += '<br><span style="font-size:18px;"><span style="color:#009dba;"><strong>Field:</strong> '+farmName+'</span></span><br> <span style="font-size:16px;"><strong>Longitude:</strong> '+longitude+'<br><strong> Latitude:</strong> '+lattitude+'<br> &nbsp;<br> <strong>Program&nbsp;Details</strong><br><br><strong>Risk Period:</strong></span><br> <span style="font-size:16px;">Start date: '+startPeriods+ ', duration '+periodDuration+ '&nbsp;days</span><br><br><span style="font-size:16px;"><strong>Weather Guarantee:</span></strong><br><span style="font-size:16px;">Rainfall Threshold:'+' '+threshold+' &nbsp;mm<br></span><span style="font-size:16px;">Rainfall Threshold Exit (30% Cash-Back):'+' '+thresholdCashback+'</span><br><br>  <span style="font-size:16px;"><strong>Committed Area:</strong></span><span style="font-size:16px;">'+String.valueOf(committedArea)+ '&nbsp;Acres</span><br><br><span style="font-size:16px;"><strong>Committed&nbsp;Product&nbsp;Details<span style="font-size:18px;"></strong><br>';
                             for(String p: productDetails){
-                                d.AgriclimeLentilsProgramDetails__c +='<li>'+p+'<span style="font-size:18px;">';
+                                d.AgriclimeLentilsProgramDetails__c +='<li>'+p+'<span style="font-size:16px;">';
                                 d.AgriclimeLentilsProgramDetails__c +='<br>';
                                 }
+                            campaignMember lentilsMember = new CampaignMember(CampaignId  = '7013m000001dDvB', ContactId = d.Id, Status = 'Registered');
+                            database.insert (lentilsMember,false);
                         }
                         conList.put(d.Id,d);
                         setOfContactIds.add(d.Id);                          
@@ -291,6 +322,7 @@
                     programRecord.RecordtypeId = agriClimeRecordTypeId;
                     programRecord.Total_Committed_Acres__c =totalCommittedArea;
                     programRecord.Province__c = programContact.Account.BillingState;
+                    
                     listofPrograms.add(programRecord);
                     
                     for(FarmWrapper.cls_purchaseSummaryList purchaseSummary : farmtest.purchaseSummaryList){
@@ -359,6 +391,7 @@
                     programRecord.RecordtypeId = agriClimeLentilsRecordTypeId;
                     programRecord.AgriClime_Lentils_Total_Committed_Acres__c =totalCommittedArea;
                     programRecord.Province__c = programContact.Account.BillingState;
+                    
                     listofPrograms.add(programRecord);
                     
                     for(FarmWrapper.cls_purchaseSummaryList purchaseSummary : farmtest.purchaseSummaryList){
