@@ -81,6 +81,7 @@ public class FarmWrapper {
         //public cls_purchases[] purchases;
         public cls_purchaseList[] purchaseList;
         public cls_riskPeriodList[] riskPeriodList;
+       
         public Decimal potentialCashback;	//20081.1
         public String name;
         public Double totalMaxPayoutPercent;
@@ -129,10 +130,13 @@ public class FarmWrapper {
 		public String peril;	//PRECIPITATION	//60
         //public cls_inseasonDayList[] inseasonDayList;
         public Double measurement;
+        public cls_indexValues indexValues;
         
     }
-    class cls_indexValues {
+    public class cls_indexValues {
 		//public Double trigger;	//47.748
+        public String triggerDisplay;
+        public String exitDisplay;
 		//public Double exit;	//1.00260162
 		public Double layer;	//46.7454
 		public Double notional;	//0.4278496
