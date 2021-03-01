@@ -481,7 +481,7 @@ public class Contact_TriggerHandler {
     }
    
     public static void resetDoNotEmail(Id contactId){
-         sendToPardot('https://pi.pardot.com/api/prospect/version/4/do/update/fid/' + contactId,'fid=' + contactId + '&is_do_not_email=false');
+         sendToPardot('https://pi.demo.pardot.com/api/prospect/version/4/do/update/fid/' + contactId,'fid=' + contactId + '&is_do_not_email=false');
            
     }
 
@@ -520,7 +520,7 @@ public class Contact_TriggerHandler {
         
            // if(c.email <> null && c.pi__url__c == null && !System.IsBatch() && !System.IsQueueable() && !Test.isRunningTest()){
             if(c.email <> null && c.pi__url__c == null && !System.IsBatch() && !System.IsQueueable() && !Test.isRunningTest()){
-                sendToPardot('https://pi.pardot.com/api/prospect/version/4/do/create','email='+c.Email + '&fid='+c.id );
+                sendToPardot('https://pi.demo.pardot.com/api/prospect/version/4/do/create','email='+c.Email + '&fid='+c.id );
                 i++;
             }
 
@@ -553,7 +553,7 @@ public class Contact_TriggerHandler {
          String loginErrorMessage = '';
          String accessToken = '';
          String result;    
-         req.setEndPoint('https://syngentacanada.my.salesforce.com/services/oauth2/token');
+         req.setEndPoint('https://syngentacanada--full.my.salesforce.com/services/oauth2/token');
          req.setBody('grant_type=password&client_id='+client_id+'&client_secret='+client_secret+'&username='+username+'&password='+password);
          req.setMethod('POST');
          req.setTimeout(20000);
