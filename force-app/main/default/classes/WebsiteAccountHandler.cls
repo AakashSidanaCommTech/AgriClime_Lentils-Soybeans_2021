@@ -29,7 +29,7 @@
         for(wint__Website_Account__c w : tempwebAcc){        
             if(w.wint__Contact__c != null || w.wint__Lead__c != null ){
                 System.debug('Testing if it is entering into tempwebAcc');
-                List <Contact> listofContacts = [SELECT id, AgriclimeProgramDetails__c,AgriclimeLentilsProgramDetails__c,AgriclimeLentilsCommittedProductDetails__c,AgriclimeSoyCommittedProductDetails__c, Account.Id, Account.BillingState, (SELECT id, Vibrance_Maxx_RFC_Committed__c,Soybean_Variety_1_Committed__c, Soybean_Variety_2_Committed__c, Soybean_Variety_3_Committed__c, Soybean_Variety_4_Committed__c, Soybean_Variety_5_Committed__c,Soybean_Variety_6_Committed__c, Soybean_Variety_7_Committed__c, Soybean_Variety_8_Committed__c,Cruiser_Maxx_Vibrance_Beans_Committed__c, VibranceMaxx_RFC_AgriClime_Lentils__c, VibranceMaxx_RTA_Agriclime_Lentils__c,VibranceMaxx_Intego_Agriclime_Lentils__c,Elatus_AgriClime_Lentils__c FROM Programs__r) FROM Contact WHERE id =: w.wint__Contact__c ];
+                List <Contact> listofContacts = [SELECT id, AgriclimeProgramDetails__c, AgriclimeLentilsProgramDetails__c,AgriclimeLentilsCommittedProductDetails__c,AgriclimeSoyCommittedProductDetails__c, Account.Id, Account.BillingState, (SELECT id, Vibrance_Maxx_RFC_Committed__c,Soybean_Variety_1_Committed__c, Soybean_Variety_2_Committed__c, Soybean_Variety_3_Committed__c, Soybean_Variety_4_Committed__c, Soybean_Variety_5_Committed__c,Soybean_Variety_6_Committed__c, Soybean_Variety_7_Committed__c, Soybean_Variety_8_Committed__c,Cruiser_Maxx_Vibrance_Beans_Committed__c, VibranceMaxx_RFC_AgriClime_Lentils__c, VibranceMaxx_RTA_Agriclime_Lentils__c,VibranceMaxx_Intego_Agriclime_Lentils__c,Elatus_AgriClime_Lentils__c FROM Programs__r) FROM Contact WHERE id =: w.wint__Contact__c ];
                 
                 List<Lead> LeadId = [SELECT id, Name, Email FROM Lead WHERE id =: w.wint__Lead__c ];
                 List<Campaign> campaigns = new List<Campaign>();
@@ -296,7 +296,7 @@
                              for(FarmWrapper.cls_purchaseSummaryList purchaseSummary : farmtest.purchaseSummaryList){
                                 String summaryProduct = purchaseSummary.productLabel;
                                 Double quantity = purchaseSummary.quantity;
-                                if (summaryProduct == 'VibranceMaxx RFC') {
+                                if (summaryProduct == 'VibranceMaxx RFC ') {
                                     //programRecord.Soybean_Variety_1__c = 'S001-D8X ';
                                     updatedprogramRecord.VibranceMaxx_RFC_AgriClime_Lentils__c = quantity;
             
@@ -414,7 +414,7 @@
                     for(FarmWrapper.cls_purchaseSummaryList purchaseSummary : farmtest.purchaseSummaryList){
                         String summaryProduct = purchaseSummary.productLabel;
                         Double quantity = purchaseSummary.quantity;
-                        if (summaryProduct == 'VibranceMaxx RFC') {
+                        if (summaryProduct == 'VibranceMaxx RFC ') {
                             //programRecord.Soybean_Variety_1__c = 'S001-D8X ';
                             programRecord.VibranceMaxx_RFC_AgriClime_Lentils__c = quantity;
     
