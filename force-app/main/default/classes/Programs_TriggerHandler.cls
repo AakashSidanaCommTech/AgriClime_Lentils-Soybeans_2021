@@ -4,7 +4,7 @@ public class Programs_TriggerHandler {
         List<Id> AccountIDs = new List<Id>();
         if (newRows <> null){
             for (Programs__c p : newRows){
-                if(p.Account__c <> null && CLS_StaticUtils.RecordTypeMap.get(p.RecordTypeID).DeveloperName <> 'AgriClime_Soybeans' && CLS_StaticUtils.RecordTypeMap.get(p.RecordTypeID).DeveloperName <> 'AgriClime_Lentils'){
+                if(p.Account__c <> null && CLS_StaticUtils.RecordTypeMap.get(p.RecordTypeID).DeveloperName <> 'AgriClime_Soybeans' && CLS_StaticUtils.RecordTypeMap.get(p.RecordTypeID).DeveloperName <> 'AgriClime_Lentils' && CLS_StaticUtils.RecordTypeMap.get(p.RecordTypeID).DeveloperName <> 'AgriClime_Payout_Backend'){
                     AccountIDs.add(p.Account__c);
                 }  
             }
@@ -30,8 +30,8 @@ public class Programs_TriggerHandler {
         }
     }
 
-    /**Public static void AgriclimeFulfilmentEmail(Programs__c[] listofAgriclimeProgramsRecord){ 
-        List<Programs__c> records = [SELECT Id, Contact__c, Risk_Start_Period__c, Actual_Cashback__c, Payout_Status__c, Actual_Rainfall__c, Program_Reference__c, Rainfall_Threshold__c, Rainfall_Exit_Point__c, Longitude__c, Latitude__c FROM Programs__c WHERE Id =: listofAgriclimeProgramsRecord];        
+    Public static void AgriclimeFulfilmentEmail(Programs__c[] listofAgriclimeProgramsRecord){ 
+        List<Programs__c> records = [SELECT Id, Contact__c, AgriclimeLentilsPayoutActualCashback__c, AgriclimeLentilsPayoutLatitude__c,AgriClimeLentilsPayoutLongitude__c, AgriclimeLentilsPayoutRainfallExitPoint__c,AgriclimeLentilsPayoutRainfallThreshold__c,AgriclimeLentilsPayoutRiskStartPeriod__c, AgriClimePayoutRecordIdentifier__c FROM Programs__c WHERE Id =: listofAgriclimeProgramsRecord];        
         Set<Id> contactIds = new Set<Id>();
         Map<Id,Contact> conList = new Map<Id,Contact>();
        
@@ -39,7 +39,7 @@ public class Programs_TriggerHandler {
             contactIds.add(record.Contact__c);
         }
         
-        List<Contact> contactId = [SELECT id, AgriclimeRefNumber__c, (SELECT Id, Risk_Start_Period__c, Actual_Cashback__c, Payout_Status__c, Actual_Rainfall__c, Program_Reference__c, Rainfall_Threshold__c, Rainfall_Exit_Point__c, Longitude__c, Latitude__c FROM Programs__r),  Payout_Email_Sent__c, Agriclime_Payout_Details__c, Agriclime_Total_Payout__c FROM Contact WHERE id =: contactIds ];
+        List<Contact> contactId = [SELECT id, (SELECT Id, AgriClime_Lentils_Total_Payout__c,AgriclimeLentilsPayoutActualCashback__c, AgriclimeLentilsPayoutLatitude__c,AgriClimeLentilsPayoutLongitude__c, AgriclimeLentilsPayoutRainfallExitPoint__c,AgriclimeLentilsPayoutRainfallThreshold__c,AgriclimeLentilsPayoutRiskStartPeriod__c, AgriClimePayoutRecordIdentifier__c FROM Programs__r), AgriclimeLentilsProgramDetails__c, AgriclimeLentilsTotalPayout__c FROM Contact WHERE id =: contactIds ];
     
         for(Contact e : ContactId){
             e.Agriclime_Payout_Details__c = ('');
@@ -47,9 +47,14 @@ public class Programs_TriggerHandler {
         }
         for(Contact con : contactId){
             for(Programs__c totalPayout : con.Programs__r ){
-                con.Agriclime_Total_Payout__c +=totalPayout.Actual_Cashback__c;
+                if(totalPayout.AgriClimePayoutRecordIdentifier__c == 'AgriClime Lentils Payout'){
+                    totalPayout.AgriClime_Lentils_Total_Payout__c +=totalPayout.AgriclimeLentilsPayoutActualCashback__c;
+                    //con.AgriclimeLentilsTotalPayout__c +=  totalPayout.AgriclimeLentilsPayoutActualCashback__c;
+
+                }
+            
             }
-            for(Programs__c onerecord : con.Programs__r ){
+            /**for(Programs__c onerecord : con.Programs__r ){
                 //con.Agriclime_Total_Payout__c +=onerecord.Actual_Cashback__c;
                 if(con.Agriclime_Total_Payout__c != 0 && (onerecord.Payout_Status__c == 'FINISH_PAYOUT' || con.Programs__r.Size() > 1 )){
                  //con.Agriclime_Payout_Details__c+= '<span style="font-size:20px;"><span style="color:#71840a;">Field: <strong> </strong></span></span><br><span style="font-size:18px;"><span style="font-size:18px;">Longitude: <strong>'+onerecord.longitude__c+'</strong><br><span style="font-size:18px;">Latitude: <strong>'+onerecord.latitude__c+'</strong><br>Risk Period Start Date: <strong>'+onerecord.Risk_Start_Period__c+ ' (duration fo 35 days)'+'</strong><br> Rainfall Threshold: <strong>'+onerecord.Rainfall_Threshold__c+' &nbsp;mm</strong><br>Rainfall Exit Ppoint: <strong>'+onerecord.Rainfall_Exit_Point__c+' &nbsp;mm</strong><br>Actual Rainfall: <strong>'+onerecord.Actual_Rainfall__c+' &nbsp;mm</strong><br>Actual Cashback: <strong>'+'$'+onerecord.Actual_Cashback__c+'&nbsp;CAD</strong><br>&nbsp;<br>';            
@@ -69,10 +74,10 @@ public class Programs_TriggerHandler {
                 CampaignMember qualifiedMember = new CampaignMember(CampaignId  = '7013m0000012fUU', ContactId = con.Id, Status = 'Qualified-Payout');
                 database.upsert (QualifiedMember,false);
                 con.Payout_Email_Sent__c = 'Unsent';
-        }       
+        }**/       
         conList.put(con.Id, con);     
     }
     Update ConList.values();
-}**/
+}
 
 }
