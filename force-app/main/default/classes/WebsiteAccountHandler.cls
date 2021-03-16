@@ -443,7 +443,7 @@
                 for(Lead ld : LeadId){
                     if(w.wint__Email__c != null){
                         Messaging.SingleEmailMessage singleMail = new Messaging.SingleEmailMessage();
-                        list<String> toAddresses = new List<String>{'kevin.heal@syngenta.com'};
+                        list<String> toAddresses = new List<String>{'aakash.sidana@syngenta.com'};
                         singleMail.setToAddresses(toAddresses);
                         singleMail.setSubject('Lead needs to be converted for :'+' ' +ld.Name);
                         singleMail.setPlainTextBody('Please convert this lead to send out registration email to: ' +'<a href=' +System.URL.getSalesforceBaseUrl().toExternalForm()+'/'+ld.Id+' >'+ ld.Name+'</a> <br/>' + '<br>' + 'Email  address:</b>' +' '+ ld.Email);
