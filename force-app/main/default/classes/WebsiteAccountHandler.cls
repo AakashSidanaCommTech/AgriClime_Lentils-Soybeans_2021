@@ -66,7 +66,7 @@
                             
                     } 
                         }
-                        else if(w.wint__Campaign__c == 'Canada_Lentil_2021'){
+                        else if(w.wint__Campaign__c == 'Canada_Lentil_2021' || w.wint__Campaign__c == 'Canada Lentil'){
                         e.AgriclimeLentilsProgramDetails__c = ('');
                         e.AgriclimeLentilsCommittedProductDetails__c = ('');
                         e.AgriclimeLentilsCommittedProductDetails__c = '<strong>Total Committed&nbsp;Product&nbsp;Details<span style="font-size:16px;"></strong>';
@@ -100,34 +100,21 @@
                     potentialCashback += CashBack;
                     String pc = potentialCashback.format();                    
                     String StartPayout = fm.weatherGuarantee;
-                    //String actualCashbackCurrency = fm.currency;
                     double lattitude = (Double)fm.gridCell.location.lat;                    
                     double longitude = (Double)fm.gridCell.location.lng;                   
                     Decimal committedSpend = fm.committedSpend.setScale(2);
                     committedPurchase +=committedSpend;
                     String compspend = committedPurchase.format();
-                    //String committedSpendCurrency = fm.currency;
                     List<String> productLabel = new List<String>();
                     List<String> productDetails = new List<String>();
-                    //List<String> seedcareDetails = new List<String>();
-                    //List<String> varietyDetails = new List<String>();
                     String weGuarantee = fm.weatherGuarantee;
                     String threshold;
                     String thresholdExit; 
-                   
-                    //String threshold = weGuarantee.substringBetween('if the rainfall during the selected guarantee period is below ', 'mm, up to a maximum payout of 30 % of the qualifying AgriClime purchases, if the rainfall is at or below');                   
-                    //String thresholdCashback = weGuarantee.substringAfter(' up to a maximum payout of 30 % of the qualifying AgriClime purchases, if the rainfall is at or below ');
                     String Prodslabel;
                     String prodsAmount;                   
                     String startPeriods;
                     Integer periodDuration;
-                    
-                    /**for (FarmWrapper.cls_indexValues indexValues: fm.indexValues) {
-                        threshold = indexValues.triggerDisplay;
-                        thresholdExit = indexValues.exitDisplay;
-                        
-                            
-                    }**/
+                   
                     for(FarmWrapper.cls_purchaseList purchase : fm.purchaseList){
                         String prdLabel = purchase.productLabel;
                         Double quantity = purchase.quantity;
@@ -138,7 +125,9 @@
                         String quantityUoM = purchase.quantityUoM;
                         String priceCurrency = purchase.priceCurrency;
                         //String prdDetails = prdLabel +','+' '+ '$'+ amounts +' '+amountCurrency;
-                        String prdDetails = prdLabel +':'+' '+ '$'+ prices; 
+                        String prdDetails = prdLabel +':'+' '+ '$'+ prices;
+                        //String prdDetails = prdLabel;
+
                         productDetails.add(prdDetails);
                         /**if(prdLabel == 'CruiserMaxx Vibrance beans' || prdLabel == 'VibranceMaxx RFC'){
                             String purchaseSeedCareSummary = prdLabel + ','+quantity;
@@ -183,7 +172,7 @@
                         //d.AgriclimeProgramDetails__c +='</strong></span></li> </ul> <p><span style="font-size:18px;"><strong></strong><br></span>';                        
                         //System.debug(+d.Programs.Id);
                      }
-                        else if(title == 'Canada_Lentil_2021'){
+                        else if(title == 'Canada_Lentil_2021' || title == 'Canada Lentil'){
                             d.AgriclimeName__c = '<span style="font-size:16px;">Name: <strong>' +w.wint__FirstName__c + ' ' +w.wint__LastName__c+ '</strong>';
                             d.AgriclimeLentilsCommittedArea__c = '<span style="font-size:14px;"><strong>Total Committed Area: ' +Area+ '&nbsp;Acres</strong><br>';
                             d.AgriclimeLentilsCommittedSpend__c = '<span style="font-size:14px;"><strong>Total Committed Purchases: ' +'$' +compspend+'</strong>';
@@ -208,6 +197,7 @@
                         if(listofUpdatePrograms.Size() > 0 ){
                      
                         for(Programs__c updatedprogramRecord : listofUpdatePrograms){
+                        updatedprogramRecord.RecordtypeId = agriClimeRecordTypeId;
                         updatedprogramRecord.Soybean_Variety_1_Committed__c = null;
                         updatedprogramRecord.Soybean_Variety_2_Committed__c = null;
                         updatedprogramRecord.Soybean_Variety_3_Committed__c = null;
@@ -282,23 +272,25 @@
                             update listofUpdatePrograms;
                      }
                     }
-                    if(conList.size()>0 && title == 'Canada_Lentil_2021'){ 
-                        List<Programs__c> listofUpdatePrograms = [SELECT id, Contact__r.Id, Vibrance_Maxx_RFC_Committed__c,Soybean_Variety_1_Committed__c, Soybean_Variety_2_Committed__c, Soybean_Variety_3_Committed__c, Soybean_Variety_4_Committed__c, Soybean_Variety_5_Committed__c,Soybean_Variety_6_Committed__c, Soybean_Variety_7_Committed__c, Soybean_Variety_8_Committed__c,Cruiser_Maxx_Vibrance_Beans_Committed__c,VibranceMaxx_RFC_AgriClime_Lentils__c, VibranceMaxx_RTA_Agriclime_Lentils__c, VibranceMaxx_Intego_Agriclime_Lentils__c, Elatus_AgriClime_Lentils__c ,AgriClime_Lentils_Total_Committed_Acres__c FROM Programs__c WHERE Contact__r.Id IN : conList.keySet() AND RecordTypeId = :agriClimeLentilsRecordTypeId];
+                    if(conList.size()>0 && (title == 'Canada_Lentil_2021' || title == 'Canada Lentil')){ 
+                        List<Programs__c> listofUpdatePrograms = [SELECT id,Program_Reference__c, Contact__r.Id, Vibrance_Maxx_RFC_Committed__c,Soybean_Variety_1_Committed__c, Soybean_Variety_2_Committed__c, Soybean_Variety_3_Committed__c, Soybean_Variety_4_Committed__c, Soybean_Variety_5_Committed__c,Soybean_Variety_6_Committed__c, Soybean_Variety_7_Committed__c, Soybean_Variety_8_Committed__c,Cruiser_Maxx_Vibrance_Beans_Committed__c,VibranceMaxx_RFC_AgriClime_Lentils__c, VibranceMaxx_RTA_Agriclime_Lentils__c, VibranceMaxx_Intego_Agriclime_Lentils__c, Elatus_AgriClime_Lentils__c ,AgriClime_Lentils_Total_Committed_Acres__c FROM Programs__c WHERE Contact__r.Id IN : conList.keySet() AND RecordTypeId = :agriClimeLentilsRecordTypeId];
                        
                         if(listofUpdatePrograms.Size() > 0 ){
                              for(Programs__c updatedprogramRecord : listofUpdatePrograms){
-                                 updatedprogramRecord.VibranceMaxx_RFC_AgriClime_Lentils__c = null;
+                                 updatedprogramRecord.RecordtypeId = agriClimeLentilsRecordTypeId;
+                                 updatedprogramRecord.Program_Reference__c = +w.wint__ReferenceNo__c;
+                                 updatedprogramRecord.Vibrance_Maxx_RFC_Committed__c = null;
                                  updatedprogramRecord.VibranceMaxx_RTA_Agriclime_Lentils__c = null;
                                  updatedprogramRecord.VibranceMaxx_Intego_Agriclime_Lentils__c = null;
                                  updatedprogramRecord.Elatus_AgriClime_Lentils__c = null;
-                                 updatedprogramRecord.AgriClime_Lentils_Total_Committed_Acres__c = Area;
+                                 updatedprogramRecord.Total_Committed_Acres__c = Area;
                              
                              for(FarmWrapper.cls_purchaseSummaryList purchaseSummary : farmtest.purchaseSummaryList){
                                 String summaryProduct = purchaseSummary.productLabel;
                                 Double quantity = purchaseSummary.quantity;
                                 if (summaryProduct == 'VibranceMaxx RFC ') {
                                     //programRecord.Soybean_Variety_1__c = 'S001-D8X ';
-                                    updatedprogramRecord.VibranceMaxx_RFC_AgriClime_Lentils__c = quantity;
+                                    updatedprogramRecord.Vibrance_Maxx_RFC_Committed__c = quantity;
             
                                 } 
                                 
@@ -401,12 +393,12 @@
                     //programRecord.Total_Committed_Acres__c = programRecord.Area;
                     }
                     
-                    if(title == 'Canada_Lentil_2021'){
-                    programRecord.AgriClime_Lentils_Program_Reference__c = +w.wint__ReferenceNo__c;
+                    if(title == 'Canada_Lentil_2021' || title == 'Canada Lentil'){
+                    programRecord.Program_Reference__c = +w.wint__ReferenceNo__c;
                     programRecord.Account__c = programContact.Account.Id;
                     programRecord.Contact__c = programContact.Id;
                     programRecord.RecordtypeId = agriClimeLentilsRecordTypeId;
-                    programRecord.AgriClime_Lentils_Total_Committed_Acres__c =totalCommittedArea;
+                    programRecord.Total_Committed_Acres__c =totalCommittedArea;
                     programRecord.Province__c = programContact.Account.BillingState;
                     
                     listofPrograms.add(programRecord);
@@ -416,7 +408,7 @@
                         Double quantity = purchaseSummary.quantity;
                         if (summaryProduct == 'VibranceMaxx RFC ') {
                             //programRecord.Soybean_Variety_1__c = 'S001-D8X ';
-                            programRecord.VibranceMaxx_RFC_AgriClime_Lentils__c = quantity;
+                            programRecord.Vibrance_Maxx_RFC_Committed__c = quantity;
     
                         } 
                         
