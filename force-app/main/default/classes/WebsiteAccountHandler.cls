@@ -29,7 +29,7 @@
         for(wint__Website_Account__c w : tempwebAcc){        
             if(w.wint__Contact__c != null || w.wint__Lead__c != null ){
                 System.debug('Testing if it is entering into tempwebAcc');
-                List <Contact> listofContacts = [SELECT id, AgriclimeProgramDetails__c, AgriclimeLentilsProgramDetails__c,AgriclimeLentilsCommittedProductDetails__c,AgriclimeSoyCommittedProductDetails__c, Account.Id, Account.BillingState, (SELECT id, Vibrance_Maxx_RFC_Committed__c,Soybean_Variety_1_Committed__c, Soybean_Variety_2_Committed__c, Soybean_Variety_3_Committed__c, Soybean_Variety_4_Committed__c, Soybean_Variety_5_Committed__c,Soybean_Variety_6_Committed__c, Soybean_Variety_7_Committed__c, Soybean_Variety_8_Committed__c,Cruiser_Maxx_Vibrance_Beans_Committed__c, VibranceMaxx_RFC_AgriClime_Lentils__c, VibranceMaxx_RTA_Agriclime_Lentils__c,VibranceMaxx_Intego_Agriclime_Lentils__c,Elatus_AgriClime_Lentils__c FROM Programs__r) FROM Contact WHERE id =: w.wint__Contact__c ];
+                List <Contact> listofContacts = [SELECT id, AgriclimeProgramDetails__c, Owner.Id, AgriclimeLentilsProgramDetails__c,AgriclimeLentilsCommittedProductDetails__c,AgriclimeSoyCommittedProductDetails__c, Account.Id, Account.BillingState, (SELECT id, Vibrance_Maxx_RFC_Committed__c,Soybean_Variety_1_Committed__c, Soybean_Variety_2_Committed__c, Soybean_Variety_3_Committed__c, Soybean_Variety_4_Committed__c, Soybean_Variety_5_Committed__c,Soybean_Variety_6_Committed__c, Soybean_Variety_7_Committed__c, Soybean_Variety_8_Committed__c,Cruiser_Maxx_Vibrance_Beans_Committed__c, VibranceMaxx_RFC_AgriClime_Lentils__c, VibranceMaxx_RTA_Agriclime_Lentils__c,VibranceMaxx_Intego_Agriclime_Lentils__c,Elatus_AgriClime_Lentils__c FROM Programs__r) FROM Contact WHERE id =: w.wint__Contact__c ];
                 
                 List<Lead> LeadId = [SELECT id, Name, Email FROM Lead WHERE id =: w.wint__Lead__c ];
                 List<Campaign> campaigns = new List<Campaign>();
@@ -286,6 +286,7 @@
                                  updatedprogramRecord.VibranceMaxx_Intego_Agriclime_Lentils__c = null;
                                  updatedprogramRecord.Elatus_AgriClime_Lentils__c = null;
                                  updatedprogramRecord.Total_Committed_Acres__c = StringArea;
+                                 
                              
                              for(FarmWrapper.cls_purchaseSummaryList purchaseSummary : farmtest.purchaseSummaryList){
                                 String summaryProduct = purchaseSummary.productLabel;
@@ -333,7 +334,7 @@
                     programRecord.RecordtypeId = agriClimeRecordTypeId;
                     programRecord.Total_Committed_Acres__c =totalCommittedArea;
                     programRecord.Province__c = programContact.Account.BillingState;
-                    
+                    programRecord.AgriClime_Sales_Rep__c =programContact.Owner.Id; 
                     listofPrograms.add(programRecord);
                     
                     for(FarmWrapper.cls_purchaseSummaryList purchaseSummary : farmtest.purchaseSummaryList){
@@ -402,6 +403,7 @@
                     programRecord.RecordtypeId = agriClimeLentilsRecordTypeId;
                     programRecord.Total_Committed_Acres__c =totalCommittedArea;
                     programRecord.Province__c = programContact.Account.BillingState;
+                    programRecord.AgriClime_Sales_Rep__c =programContact.Owner.Id;
                     
                     listofPrograms.add(programRecord);
                     
@@ -437,7 +439,7 @@
                 for(Lead ld : LeadId){
                     if(w.wint__Email__c != null){
                         Messaging.SingleEmailMessage singleMail = new Messaging.SingleEmailMessage();
-                        list<String> toAddresses = new List<String>{'aakash.sidana@syngenta.com'};
+                        list<String> toAddresses = new List<String>{'kevin.heal@syngenta.com'};
                         singleMail.setToAddresses(toAddresses);
                         singleMail.setSubject('Lead needs to be converted for :'+' ' +ld.Name);
                         singleMail.setPlainTextBody('Please convert this lead to send out registration email to: ' +'<a href=' +System.URL.getSalesforceBaseUrl().toExternalForm()+'/'+ld.Id+' >'+ ld.Name+'</a> <br/>' + '<br>' + 'Email  address:</b>' +' '+ ld.Email);
