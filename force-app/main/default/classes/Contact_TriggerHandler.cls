@@ -400,6 +400,7 @@ public class Contact_TriggerHandler {
                   }else if(ce.Pardot_Opt_In_Email_Communications__c== 'No' && (ce.Opt_in_ECom__c<> 'No (Opted-out)'  || ce.Pardot_Do_Not_Email__c <> true)){
                       ce.Opt_in_ECom__c= 'No (Opted-out)';
                       ce.Do_Not_Email__c = true;
+                      ce.Pardot_Do_Not_Email__c = true;
                       ce.Pardot_Mailable__c = 'No';
                       UpdateMade = true;
                   }                                    
@@ -438,6 +439,7 @@ public class Contact_TriggerHandler {
                   }else if(ce.Pardot_Opt_In_Email_Communications__c=='No'){
                       ce.Do_Not_Email__c = true;
                       ce.Pardot_Mailable__c = 'No';
+                      ce.Pardot_Do_Not_Email__c = true;
                   }
                   
                   /* Reset */
@@ -461,6 +463,7 @@ public class Contact_TriggerHandler {
                   if(ce.Opt_in_ECom__c== 'No (Implied)' && ce.Pardot_Do_Not_Email__c <> true){
                       ce.Pardot_Do_Not_Email__c = true;
                       ce.Do_Not_Email__c = true;
+                      ce.Pardot_Do_Not_Email__c = true;
                       ce.Pardot_Mailable__c = 'No';
                       UpdateMade = true;
                   }                                  
@@ -481,7 +484,21 @@ public class Contact_TriggerHandler {
     }
    
     public static void resetDoNotEmail(Id contactId){
-         sendToPardot('https://pi.demo.pardot.com/api/prospect/version/4/do/update/fid/' + contactId,'fid=' + contactId + '&is_do_not_email=false');
+        String business_unit_id = '';
+        String sandboxURL='';
+        
+        if(URL.getSalesforceBaseUrl().toExternalForm().contains('syngentacanada.my.salesforce.com') ){
+            business_unit_id ='0Uv1N000000PAscSAG';
+        }
+        else if(URL.getSalesforceBaseUrl().toExternalForm().contains('syngentacanada--full.my.salesforce.com') ){
+            business_unit_id ='0Uv7j0000008ONjCAM';
+            sandboxURL = 'demo.';
+        }
+        if(contactId != null){
+            //System.Debug('SendToPardot: https://pi.' + sandboxURL + 'pardot.com/api/prospect/version/4/do/update/fid/' + contactId + business_unit_id + 'fid=' + contactId + '&is_do_not_email=false');
+            sendToPardot('https://pi.' + sandboxURL + 'pardot.com/api/prospect/version/4/do/update/fid/' + contactId, business_unit_id, 'fid=' + contactId + '&is_do_not_email=false');
+        }
+         
            
     }
 
@@ -518,19 +535,30 @@ public class Contact_TriggerHandler {
                 break;
             }
         
-           // if(c.email <> null && c.pi__url__c == null && !System.IsBatch() && !System.IsQueueable() && !Test.isRunningTest()){
+            // if(c.email <> null && c.pi__url__c == null && !System.IsBatch() && !System.IsQueueable() && !Test.isRunningTest()){
+            String business_unit_id = '';
+            String sandboxURL='';
+            if(URL.getSalesforceBaseUrl().toExternalForm().contains('syngentacanada.my.salesforce.com') ){
+               business_unit_id ='0Uv1N000000PAscSAG';
+            }
+            else if(URL.getSalesforceBaseUrl().toExternalForm().contains('syngentacanada--full.my.salesforce.com') ){
+               business_unit_id ='0Uv7j0000008ONjCAM';
+               sandboxURL = 'demo.';
+            }
+            
             if(c.email <> null && c.pi__url__c == null && !System.IsBatch() && !System.IsQueueable() && !Test.isRunningTest()){
-                sendToPardot('https://pi.demo.pardot.com/api/prospect/version/4/do/create','email='+c.Email + '&fid='+c.id );
-                i++;
+               sendToPardot('https://pi.' + sandboxURL + 'pardot.com/api/prospect/version/4/do/create',business_unit_id, 'email='+c.Email + '&fid='+c.id );
+               i++;
             }
 
         }   
     }  
     @future (callout=true)
-    public static void sendToPardot(String url, String body){
+    public static void sendToPardot(String url, String business_unit_id, String body){
         
         String accessToken = loginToPardot();        
-        String business_unit_id = '0Uv7j0000008ONjCAM';
+       
+        
         HttpResponse res = httpCallout( url,'&'+ body, + accessToken, +business_unit_id );
         //System.debug('Response from Server in Salesforce: '+res);
     }
@@ -542,10 +570,23 @@ public class Contact_TriggerHandler {
     }
     public static String loginToPardot(){ 
     
-        String client_id = '3MVG9M6Iz6p_Vt2xTZYciaJsvx6znj1ufbsvCZZQNFitKcnUuk6.7XqKNUTJcIaAjiBSurMMQP8hgqbcjag1y';
-        String client_secret = '829367A36ABD211EEB489AB4FDC304ED33844AA2DE467CD6394D81E4CDA20812';
+        String client_id = '';
+        String client_secret='';
+        String username ='';
+        
+        if(URL.getSalesforceBaseUrl().toExternalForm().contains('syngentacanada.my.salesforce.com') ){
+            client_id = '3MVG9xOCXq4ID1uHvwm0tHbSjh3ZZZ87gbnrjVD3fa7hKxq2Y2u4TQAvwuO3XeuQGb4Th3ewiaAl_jEFf.g7n';
+            client_secret = '0B962F809E320FE9A2CA3D6344813188F9B45B05A81D0E9C8016D8E58D3823C5';
+            username = 'pardot.user@syngenta.com.ca';
+        }
+        else if(URL.getSalesforceBaseUrl().toExternalForm().contains('syngentacanada--full.my.salesforce.com') ){
+            client_id = '3MVG9M6Iz6p_Vt2xTZYciaJsvx6znj1ufbsvCZZQNFitKcnUuk6.7XqKNUTJcIaAjiBSurMMQP8hgqbcjag1y';
+            client_secret = '829367A36ABD211EEB489AB4FDC304ED33844AA2DE467CD6394D81E4CDA20812';
+            username = 'pardot.user@syngenta.com.ca.full';            
+        }
+            
         String password = 'r1299130013011302';
-        String username = 'pardot.user@syngenta.com.ca.full';
+
          String bodyReturn = '';
          HttpRequest req = new HttpRequest();
          HttpResponse res = new HttpResponse();
@@ -553,7 +594,7 @@ public class Contact_TriggerHandler {
          String loginErrorMessage = '';
          String accessToken = '';
          String result;    
-         req.setEndPoint('https://syngentacanada--full.my.salesforce.com/services/oauth2/token');
+         req.setEndPoint(URL.getSalesforceBaseUrl().toExternalForm() + '/services/oauth2/token');
          req.setBody('grant_type=password&client_id='+client_id+'&client_secret='+client_secret+'&username='+username+'&password='+password);
          req.setMethod('POST');
          req.setTimeout(20000);

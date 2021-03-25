@@ -34,16 +34,9 @@ public class Programs_TriggerHandler {
         Map<Id,Contact> conList = new Map<Id,Contact>();
         Double actualCashback = 0;
         List<Programs__c> records = [SELECT Id, AgriClimePayoutEmailActualRainfall__c, AgriClimePayoutCampaignorOfferName__c, Contact__c, Payout_Status__c, AgriClimePayoutEmailActualCashback__c, AgriClimePayoutEmailLatitude__c, AgriClimePayoutEmailLongitude__c, AgriClimePayoutEmailRainfallExitPoint__c,AgriClimePayoutEmailRainfallThreshold__c,AgriClimePayoutEmailRiskStartPeriod__c, AgriClimePayoutRecordIdentifier__c FROM Programs__c WHERE Id =: listofAgriclimeProgramsRecord];        
-        Map<Id, List<Programs__c>> LentilsUploadedProgramsMap = new Map<Id, List<Programs__c>>();
-        Map<Id, List<Programs__c>> testMap = new Map<Id, List<Programs__c>>();
             {
     }
-        Set<Id> contactIds = new Set<Id>();
-        //Map<Id,Contact> conList = new Map<Id,Contact>();
-
-        Map<Id, List<Programs__c>> contactLentilsProgramsMap = new Map<Id, List<Programs__c>>();
-        List<Programs__c> updatedPrograms =  new List<Programs__c>();
-        
+        Set<Id> contactIds = new Set<Id>();   
         Id agriClimeLentilsRecordTypeId = Schema.SObjectType.Programs__c.getRecordTypeInfosByName().get('AgriClime Lentils').getRecordTypeId();                
         Id agriClimeLentilsBackendRecordTypeId = Schema.SObjectType.Programs__c.getRecordTypeInfosByName().get('AgriClime Payout Backend').getRecordTypeId();                        
         List<CampaignMember> cm = new List<CampaignMember>();
@@ -94,12 +87,12 @@ public class Programs_TriggerHandler {
 
                 }        
                 
-                    if((programrecord.Payout_Status__c == 'FINISH_PAYOUT' && programrecord.AgriClimePayoutCampaignorOfferName__c == 'Canada_Soy_2021')|| (programrecord.Payout_Status__c == 'FINISH_NO_PAYOUT' && f.AgriclimeLentilsTotalPayout__c <> 0 && programrecord.AgriClimePayoutCampaignorOfferName__c == 'Canada_Soy_2021')){
+                    if((programrecord.Payout_Status__c == 'FINISH_PAYOUT' && programrecord.AgriClimePayoutCampaignorOfferName__c == 'Canada_Soy_2021')|| (programrecord.Payout_Status__c == 'FINISH_NO_PAYOUT' && f.Agriclime_Total_Payout__c <> 0 && programrecord.AgriClimePayoutCampaignorOfferName__c == 'Canada_Soy_2021')){
                         f.Agriclime_Payout_Details__c += '<span style="font-size:16px;"><span style="color:#138DCD;"><strong>Field: </strong></span></span><br><span style="font-size:14px;"><strong>Longitude:</strong> '+ programrecord.AgriClimePayoutEmailLongitude__c +', <span style="font-size: 14px;"><strong>Latitude:</strong> '+ programrecord.AgriClimePayoutEmailLatitude__c +'<br><span style="font-size: 14px;"><strong>Risk Period Start Date:</strong> '+ programrecord.AgriClimePayoutEmailRiskStartPeriod__c + ' (duration of 35 days)'+'<br> <span style="font-size: 14px;"><strong>Rainfall Threshold:</strong> '+ programrecord.AgriClimePayoutEmailRainfallThreshold__c +'&nbsp;mm<br><span style="font-size: 14px;"><strong>Rainfall Exit Point:</strong> '+ programrecord.AgriClimePayoutEmailRainfallExitPoint__c +'&nbsp;mm<br><span style="font-size: 14px;"><strong>Actual Rainfall:</strong> '+programrecord.AgriClimePayoutEmailActualRainfall__c+ '&nbsp;mm<br><strong>Actual Cashback:</strong> '+'$'+ programrecord.AgriClimePayoutEmailActualCashback__c +'&nbsp;<br><br></span>';            
                         f.Agriclime_Total_Payout__c += programrecord.AgriClimePayoutEmailActualCashback__c;
                     
                         List<CampaignMember> cmList1 =  [SELECT id, status FROM CampaignMember WHERE ContactId =: f.Id AND CampaignId =: '7013m000001dDv6' ];    
-                        if(programrecord.AgriClimePayoutCampaignorOfferName__c == 'Canada_Soy_2021' && programrecord.Payout_Status__c == 'FINISH_NO_PAYOUT' && f.AgriclimeLentilsTotalPayout__c == 0 ){
+                        if(programrecord.AgriClimePayoutCampaignorOfferName__c == 'Canada_Soy_2021' && programrecord.Payout_Status__c == 'FINISH_NO_PAYOUT' && f.Agriclime_Total_Payout__c == 0 ){
                         
                         for(CampaignMember cms : cmList1){
                             cms.status = 'Qualified No-Payout';
@@ -109,7 +102,7 @@ public class Programs_TriggerHandler {
                         
 
                     }
-                        else if(programrecord.AgriClimePayoutCampaignorOfferName__c == 'Canada_Soy_2021' && programrecord.Payout_Status__c == 'FINISH_PAYOUT' && f.AgriclimeLentilsTotalPayout__c <> 0 ){
+                        else if(programrecord.AgriClimePayoutCampaignorOfferName__c == 'Canada_Soy_2021' && programrecord.Payout_Status__c == 'FINISH_PAYOUT' && f.Agriclime_Total_Payout__c <> 0 ){
                             for(CampaignMember cms : cmList1){
                                 cms.status = 'Qualified Payout';
                                 //cmList.add(cms);

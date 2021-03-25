@@ -169,8 +169,10 @@
                             d.AgriclimeProgramDetails__c += +p+'<span style="font-size:14px;">';
                             d.AgriclimeProgramDetails__c +='<br>';
                         }  
+                        if(Trigger.isInsert || (weboldMap.get(w.id).wint__Contact__c == null && w.wint__Contact__c <> null) ){
                         campaignMember soybeansMember = new CampaignMember(CampaignId  = '7013m000001dDv6', ContactId = d.Id, Status = 'Registered');
-                        database.insert (soybeansMember,false);                       
+                        database.insert (soybeansMember,false);   
+                        }                    
                         //d.AgriclimeProgramDetails__c +='</strong></span></li> </ul> <p><span style="font-size:18px;"><strong></strong><br></span>';                        
                         //System.debug(+d.Programs.Id);
                      }
@@ -187,8 +189,10 @@
                                 d.AgriclimeLentilsProgramDetails__c += +p+'<span style="font-size:14px;">';
                                 d.AgriclimeLentilsProgramDetails__c +='<br>';
                                 }
+                            if(Trigger.isInsert || (weboldMap.get(w.id).wint__Contact__c == null && w.wint__Contact__c <> null) ){
                             campaignMember lentilsMember = new CampaignMember(CampaignId  = '7013m000001dDvB', ContactId = d.Id, Status = 'Registered');
                             database.insert (lentilsMember,false);
+                            }
                         }
                         conList.put(d.Id,d);
                         setOfContactIds.add(d.Id);                          
