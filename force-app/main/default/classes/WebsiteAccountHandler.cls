@@ -22,7 +22,7 @@
         FarmWrapper farmtest;
         Map<Id,Contact> conList = new Map<Id,Contact>();
         Map<Id, Programs__c> ProgramMap = new Map<Id, Programs__c>();
-        List<wint__Website_Account__c> tempwebAcc = [SELECT id,wint__Contact__c,wint__Campaign__c, wint__Contact2__c, wint__Email__c, wint__Lead__c,wint__Any__c,wint__ReferenceNo__c,wint__FirstName__c,wint__LastName__c,wint__Company__c, wint__Street__c,wint__City__c, wint__Street2__c,wint__PostalCode__c, wint__State__c, wint__FarmName__c  FROM wint__Website_Account__c WHERE id IN :triggernew];      
+        List<wint__Website_Account__c> tempwebAcc = [SELECT id,wint__Status__c, wint__Contact__c,wint__Campaign__c, wint__Contact2__c, wint__Email__c, wint__Lead__c,wint__Any__c,wint__ReferenceNo__c,wint__FirstName__c,wint__LastName__c,wint__Company__c, wint__Street__c,wint__City__c, wint__Street2__c,wint__PostalCode__c, wint__State__c, wint__FarmName__c  FROM wint__Website_Account__c WHERE id IN :triggernew];      
         system.debug('Testing if it is taking contact data');
         Set<Id> setOfContactIds = new Set<Id>();
         String totalCommittedArea;
@@ -169,12 +169,12 @@
                             d.AgriclimeProgramDetails__c += +p+'<span style="font-size:14px;">';
                             d.AgriclimeProgramDetails__c +='<br>';
                         }  
-                        if(Trigger.isInsert || (weboldMap.get(w.id).wint__Contact__c == null && w.wint__Contact__c <> null) ){
+                        //if(Trigger.isInsert || (weboldMap.get(w.id).wint__Contact__c == null && w.wint__Contact__c <> null) ){
                         campaignMember soybeansMember = new CampaignMember(CampaignId  = '7013m000001dDv6', ContactId = d.Id, Status = 'Registered');
-                        database.insert (soybeansMember,false);   
-                        }                    
-                        //d.AgriclimeProgramDetails__c +='</strong></span></li> </ul> <p><span style="font-size:18px;"><strong></strong><br></span>';                        
-                        //System.debug(+d.Programs.Id);
+                        database.insert (soybeansMember,false);    
+                    //}
+                       
+                           
                      }
                         else if(title == 'Canada_Lentil_2021' || title == 'Canada Lentil'){
                             d.AgriclimeName__c = '<span style="font-size:16px;">Name: <strong>' +w.wint__FirstName__c + ' ' +w.wint__LastName__c+ '</strong>';
@@ -189,10 +189,10 @@
                                 d.AgriclimeLentilsProgramDetails__c += +p+'<span style="font-size:14px;">';
                                 d.AgriclimeLentilsProgramDetails__c +='<br>';
                                 }
-                            if(Trigger.isInsert || (weboldMap.get(w.id).wint__Contact__c == null && w.wint__Contact__c <> null) ){
+                            //if(Trigger.isInsert || (weboldMap.get(w.id).wint__Contact__c == null && w.wint__Contact__c <> null) ){
                             campaignMember lentilsMember = new CampaignMember(CampaignId  = '7013m000001dDvB', ContactId = d.Id, Status = 'Registered');
                             database.insert (lentilsMember,false);
-                            }
+                            //}
                         }
                         conList.put(d.Id,d);
                         setOfContactIds.add(d.Id);                          
@@ -339,6 +339,10 @@
                     programRecord.Total_Committed_Acres__c =totalCommittedArea;
                     programRecord.Province__c = programContact.Account.BillingState;
                     programRecord.AgriClime_Sales_Rep__c =programContact.Owner.Id; 
+                   
+                    campaignMember soybeansMember = new CampaignMember(CampaignId  = '7013m000001dDv6', ContactId = programContact.Id, Status = 'Registered');
+                    database.insert (soybeansMember,false);    
+                
                     listofPrograms.add(programRecord);
                     
                     for(FarmWrapper.cls_purchaseSummaryList purchaseSummary : farmtest.purchaseSummaryList){
@@ -408,6 +412,8 @@
                     programRecord.Total_Committed_Acres__c =totalCommittedArea;
                     programRecord.Province__c = programContact.Account.BillingState;
                     programRecord.AgriClime_Sales_Rep__c =programContact.Owner.Id;
+                    campaignMember lentilsMember = new CampaignMember(CampaignId  = '7013m000001dDvB', ContactId = programContact.Id, Status = 'Registered');
+                    database.insert (lentilsMember,false);
                     
                     listofPrograms.add(programRecord);
                     
