@@ -169,11 +169,9 @@
                             d.AgriclimeProgramDetails__c += +p+'<span style="font-size:14px;">';
                             d.AgriclimeProgramDetails__c +='<br>';
                         }  
-                        //if(Trigger.isInsert || (weboldMap.get(w.id).wint__Contact__c == null && w.wint__Contact__c <> null) ){
-                        campaignMember soybeansMember = new CampaignMember(CampaignId  = '7013m000001dDv6', ContactId = d.Id, Status = 'Registered');
-                        database.insert (soybeansMember,false);    
-                    //}
                        
+                            campaignMember soybeansMember = new CampaignMember(CampaignId  = '7013m000001dDv6', ContactId = d.Id, Status = 'Registered');
+                            database.insert (soybeansMember,false);    
                            
                      }
                         else if(title == 'Canada_Lentil_2021' || title == 'Canada Lentil'){
@@ -189,10 +187,11 @@
                                 d.AgriclimeLentilsProgramDetails__c += +p+'<span style="font-size:14px;">';
                                 d.AgriclimeLentilsProgramDetails__c +='<br>';
                                 }
-                            //if(Trigger.isInsert || (weboldMap.get(w.id).wint__Contact__c == null && w.wint__Contact__c <> null) ){
-                            campaignMember lentilsMember = new CampaignMember(CampaignId  = '7013m000001dDvB', ContactId = d.Id, Status = 'Registered');
-                            database.insert (lentilsMember,false);
-                            //}
+                           
+                                campaignMember lentilsMember = new CampaignMember(CampaignId  = '7013m000001dDvB', ContactId = d.Id, Status = 'Registered');
+                                //system.debug('Testing if it is taking Lentils campaign data' +d.Id+('')+('')+lentilsMember);
+                                database.insert (lentilsMember,false);
+                           
                         }
                         conList.put(d.Id,d);
                         setOfContactIds.add(d.Id);                          
@@ -338,11 +337,7 @@
                     programRecord.RecordtypeId = agriClimeRecordTypeId;
                     programRecord.Total_Committed_Acres__c =totalCommittedArea;
                     programRecord.Province__c = programContact.Account.BillingState;
-                    programRecord.AgriClime_Sales_Rep__c =programContact.Owner.Id; 
-                   
-                    campaignMember soybeansMember = new CampaignMember(CampaignId  = '7013m000001dDv6', ContactId = programContact.Id, Status = 'Registered');
-                    database.insert (soybeansMember,false);    
-                
+                    programRecord.AgriClime_Sales_Rep__c =programContact.Owner.Id;                    
                     listofPrograms.add(programRecord);
                     
                     for(FarmWrapper.cls_purchaseSummaryList purchaseSummary : farmtest.purchaseSummaryList){
@@ -412,9 +407,6 @@
                     programRecord.Total_Committed_Acres__c =totalCommittedArea;
                     programRecord.Province__c = programContact.Account.BillingState;
                     programRecord.AgriClime_Sales_Rep__c =programContact.Owner.Id;
-                    campaignMember lentilsMember = new CampaignMember(CampaignId  = '7013m000001dDvB', ContactId = programContact.Id, Status = 'Registered');
-                    database.insert (lentilsMember,false);
-                    
                     listofPrograms.add(programRecord);
                     
                     for(FarmWrapper.cls_purchaseSummaryList purchaseSummary : farmtest.purchaseSummaryList){
