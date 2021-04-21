@@ -224,6 +224,7 @@
                         updatedprogramRecord.Soybean_Variety_1_Committed__c = quantity;
 
                         } 
+                        
                     
                          if(summaryProduct == 'S003-Z4X '){
                         
